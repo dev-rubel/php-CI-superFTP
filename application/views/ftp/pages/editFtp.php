@@ -11,7 +11,6 @@
                     <th>#</th>
                     <th>Name</th>
                     <th>Host</th>
-                    <th>UserName</th>
                     <th>Location Path</th>
                     <th>Port</th>
                     <th>Action</th>
@@ -25,7 +24,6 @@
                     <td><?php echo $k+1; ?></td>
                     <td><?php echo $ftp['ftpName']; ?></td>
                     <td><?php echo $ftp['ftpHost']; ?></td>
-                    <td><?php echo $ftp['ftpUser']; ?></td>
                     <td><?php echo $ftp['ftpPath']; ?></td>
                     <td><?php echo $ftp['ftpPort']; ?></td>
                     <td>

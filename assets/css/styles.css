@@ -1,24 +1,57 @@
 /* New custom added */
-#controlPanel {
-  margin-bottom: 15px;
-  border-bottom: 1px solid #5cb85c;
-  padding-bottom: 27px;
+#editor { 
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 300px;
 }
-#controlPanel i {
-	color: #5cb85c;
+.file-control {
+	margin-left: 10px;
 }
-#controlPanel a {
-  color: #5cb85c;
+.file-control a {
+	text-decoration: none;
+	padding: 0px 5px;
+}
+.file-control i:hover {
+	color: lightcoral;
+}
+.fileExt {
+	border: 1px solid;
+	padding: 3px 10px;
+	margin-right: 4px;
+	font-weight: normal;
+	color: lightcoral;
+	text-transform: uppercase;
+	font-size: 10px;
+}
+
+.dir-list {
+  border: 1px solid;
+  padding: 1px;
+  margin-right: 5px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.dir-list a {  
   text-decoration: none;
-  
+  text-transform: capitalize;
+  font-size: 11px;
 }
+
+.controlPanel {
+  margin-bottom: 10px;
+}
+
 .radio-color {
   padding: 5px;
   color: #fff;
   display: inline-block;
 }
 
-.nav-text{
+.nav-text {
   background-color: #428bca;
   padding: 14px 0px;
   margin: 0;

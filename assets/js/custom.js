@@ -1,3 +1,26 @@
+// function IsNewTab() {
+//   return $.cookie('TabOpen');
+// }
+
+// $(function() {
+//   if (!IsNewTab()) {
+//     $.cookie('TabOpen', "YES", {
+//     path: '/'
+//     });
+//     $(window).unload(function() {
+//     $.removeCookie('TabOpen', {
+//       path: '/'
+//     });
+//     });
+//   } else {
+//     // alert('already some tab open')
+//     //OR
+//     window.top.close();
+//   }
+// });
+/* end cookies for prevent to open the project on multiple tab */
+
+
 $('.spinner').hide();
 $.ajaxSetup({
     beforeSend: function(){ 
@@ -9,6 +32,8 @@ $.ajaxSetup({
       $('.spinner').hide();
     }
 });
+/* end global ajax before and complete section */
+
 $(document).ready(function(){
     $(".submenu > a").click(function(e) {
     e.preventDefault();

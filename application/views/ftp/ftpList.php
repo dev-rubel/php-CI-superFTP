@@ -25,26 +25,5 @@
 </div>
 
 <script>    
-
     
-    function changeFtp(id,info){
-        $(".nav li").removeClass('current');
-        $(info).addClass('current');
-        $.ajax({
-            url: "ftp/getFtpContent",
-            type: 'post',
-            data: {'id':id},
-            success:function(response){
-                var jData = JSON.parse(response);
-
-                if(!jData.type) {
-                    toastr.error(jData.msg);
-                } else {
-                    toastr.success(jData.msg);
-                    $('#wrapperContent').html(jData.html);                    
-                    // console.log(jData.html);
-                }
-            }
-        });
-    }
 </script>

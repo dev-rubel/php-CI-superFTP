@@ -9,15 +9,15 @@ class Ftp extends CI_Controller {
      * @author Nur Alam Rubel
      * @date 27-05-18
      * 
-      */
+    */
 
-      public function __construct() 
-      {   
-          parent::__construct();
-          if(empty($_SESSION['userInfo'])) {
-              redirect('login');
-          }
-      }
+    public function __construct() 
+    {   
+        parent::__construct();
+        if(empty($_SESSION['userInfo'])) {
+            redirect('login');
+        }
+    }
 
 	public function index()
 	{
@@ -33,8 +33,7 @@ class Ftp extends CI_Controller {
      * 
      * @return Response
      * @route add-ftp
-      */
-
+    */
     public function addFtp() 
     {
         $data['active'] = 'addFtp';
@@ -49,8 +48,7 @@ class Ftp extends CI_Controller {
      * 
      * @return Response | String 
      * @route add-ftp-account
-      */
-
+    */
     public function addFtpAccount() 
     {
         $post = $this->input->post();
@@ -72,8 +70,7 @@ class Ftp extends CI_Controller {
      * 
      * @return Response
      * @route edit-ftp
-      */
-
+    */
     public function editFtp() 
     {
         $data2['ftps'] = $this->ftpM->getFtpAccounts();
@@ -90,8 +87,7 @@ class Ftp extends CI_Controller {
      * $param $id
      * @return Response
      * @route edit-ftp/(:num)
-      */
-
+    */
     public function editFtpAccount($id) 
     {
         $data2['ftps'] = $this->ftpM->getFtpAccounts($id);
@@ -108,8 +104,7 @@ class Ftp extends CI_Controller {
      * $param $id
      * @return Response
      * @route update-ftp-account/(:num)
-      */
-
+    */
     public function updateFtpAccount($id) 
     {
         $post = $this->input->post();
@@ -130,8 +125,7 @@ class Ftp extends CI_Controller {
      * 
      * @return Response
      * @route delete-ftp
-      */
-
+    */
     public function deleteFtp() 
     {
         $data2['ftps'] = $this->ftpM->getFtpAccounts();
@@ -147,8 +141,7 @@ class Ftp extends CI_Controller {
      * 
      * @return Response
      * @route delete-ftp-account
-      */
-
+    */
     public function deleteFtpAccount($id) 
     {
         $this->ftpM->deleteFtpAccounts($id);
@@ -161,8 +154,7 @@ class Ftp extends CI_Controller {
      * 
      * @return Response
      * @route settings
-      */
-
+    */
     public function settingsFtp() 
     {
         $data['active'] = 'settingsFtp';
@@ -176,7 +168,7 @@ class Ftp extends CI_Controller {
      * update settings ftp function
      * 
      * @return Response
-      */
+    */
     public function updateSettingsFtp() 
     {
         $post = $this->input->post('systemGeneralColor');
@@ -185,74 +177,5 @@ class Ftp extends CI_Controller {
         redirect('settings');
     }
 
-    /**
-     * ajax request for ftp data
-     * 
-     * @return Response
-      */
-    public function getFtpContent() 
-    {        
-        /* unset previous sesson */
-        unset($_SESSION['ftpId']);
-        unset($_SESSION['basePath']);
-        unset($_SESSION['previousPath']);
-        unset($_SESSION['currentPath']);        
-        $data['ftpInfo'] = $this->ftpM->getFtpAccountInfo($_POST['id']);
-        $data['ftpDir']  = $this->getFtpConnection($data['ftpInfo'],$data['ftpInfo']['ftpPath'],'list'); 
-        /* set new session */
-        $_SESSION['ftpId'] = $_POST['id'];
-        $_SESSION['basePath'] = $data['ftpInfo']['ftpPath'];
-        $_SESSION['previousPath'] = $data['ftpInfo']['ftpPath'];
-        $_SESSION['currentPath'] = $data['ftpInfo']['ftpPath'];
-        $html = $this->load->view('ftp/pages/ftpDirPage',$data,true);
-        echo $this->jsonMsgReturn(true,'Success',$html);
-    }
-
-    public function getFtpContentTwo() 
-    {
-        /* Create previous path from current path */
-        $pre = explode('/',$_POST['path']);
-        if($_POST['path'] !== $_SESSION['basePath']) {
-            $_SESSION['previousPath'] = implode('/',array_slice($pre,0,-2)).'/';
-        } else {
-            $_SESSION['previousPath'] = $_SESSION['currentPath'];
-        }        
-        /* Set current path */
-        $_SESSION['currentPath'] = $_POST['path'];
-        $data['ftpInfo'] = $this->ftpM->getFtpAccountInfo($_SESSION['ftpId']);
-        $data['ftpDir']  = $this->getFtpConnection($data['ftpInfo'],$_POST['path'],'list'); 
-        $html = $this->load->view('ftp/pages/ftpDirPage',$data,true);
-        echo $this->jsonMsgReturn(true,'Success',$html);
-    }
     
-    /**
-     * ftp connection for ajax request
-     * 
-     * @return ftp directory data
-      */
-    public function getFtpConnection($ftpData,$path,$dir='list') 
-    {
-        extract($ftpData);
-        $this->load->library('ftp');
-        $config['hostname'] = $ftpHost;
-        $config['username'] = $ftpUser;
-        $config['password'] = $this->encryption->decrypt($ftpPassword);
-        $config['debug']    = TRUE;
-        $this->ftp->connect($config);
-        if($dir == 'list') {
-            $list = $this->ftp->list_files($path);
-        }         
-        $this->ftp->close();
-        return $list;
-    }
-
-    /**
-     * json encode string for ajax request
-     * 
-     * @return json
-      */
-    function jsonMsgReturn($type, $msg, $html='')
-    {
-        echo json_encode(['type'=>$type,'msg'=>$msg,'html'=>$html]);
-    }
 }

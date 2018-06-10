@@ -1,8 +1,8 @@
-<?php 
-
+<?php  
 $folder = [];
 $file = [];
 $zip = [];
+$img = [];
 foreach($ftpDir as $k=>$each){
     $ext = getFileOrFolder($each);
     if($ext == 'folder'){
@@ -11,159 +11,197 @@ foreach($ftpDir as $k=>$each){
         $zip[] = $each;
     } elseif($ext == 'file') {
         $file[] = $each;
+    } elseif($ext == 'img') {
+        $img[] = $each;
     }
-
 }
-$sortDir = array_merge($folder,$file,$zip);
-
-
-// debug($_SESSION['previousPath']);
-// debug($_SESSION['currentPath']);
+$sortDir = array_merge($folder,$file,$zip,$img);
 ?>
 
+<style>
+ .dir-list-padding {
+    padding: 10px 0px;
+ }
+ .form-control {
+     height: 30px !important;
+ } 
+ .form-group {
+    margin-bottom: 0px;
+}
+</style>
 
 <div class="content-box-header panel-heading nav-text">
-    <div class="panel-title"><?php echo $ftpInfo['ftpName']; ?> Directory files&folder.</div>
-    
+    <div class="panel-title"><?php echo $ftpInfo['ftpName']; ?> Directory files&folder.</div>    
 </div>
 <div class="content-box-large box-with-header">   
-<div class="row">
-
-    <div id="controlPanel" class="controlPanel">
-    <?php if($_SESSION['currentPath'] !== $_SESSION['basePath']): ?>
-        <div class="col-md-2">
-            <a href="#" data-path="<?php echo $_SESSION['basePath'];?>">
-                <i class="glyphicon glyphicon-fast-backward"></i> Root Folder
-            </a>        
+<div class="row controlPanel" id="controlPanel">
+    
+    <div class="col-md-12">
+        <div class="col-md-5 dir-list dir-list-padding">
+            <form id="uploadFile">
+                <div class="form-group">
+                    <div class="col-md-8">
+                        <input type="file" name="filename" data-text="Upload file" class="filestyle" data-btnClass="btn-primary" data-placeholder="No file" data-size="sm"> 
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-info btn-sm">Upload</button>
+                    </div>
+                </div>
+            </form>
         </div>
-    <?php endif; ?>
-    <?php if($_SESSION['previousPath'] !== $_SESSION['basePath']): ?>
-        <div class="col-md-3">
-            <a href="#" data-path="<?php echo $_SESSION['previousPath'];?>">
-                <i class="glyphicon glyphicon-step-backward"></i> Previous Folder
-            </a>        
+        <div class="col-md-6 dir-list dir-list-padding">
+            <form id="renameFile">
+                <div class="form-group">
+                    <div class="col-md-5">
+                        <input type="text" name="oldFileName" class="form-control" placeholder="Old file name"> 
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" name="newFileName" class="form-control" placeholder="New file name"> 
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-info btn-sm">Rename</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
-    <?php endif; ?>
+
+    <div class="col-md-12">
+        <div class="col-md-2 dir-list">
+            <a href="#" 
+            data-path="<?php echo $_SESSION[$ftpIdDynamic]['basePath'];?>"
+            data-dynamicid="<?php echo $ftpIdDynamic; ?>">
+                Root
+            </a>        
+        </div>
+        <?php 
+            $current_path = '';
+            $need_base_path = '';        
+            if(strpos($_SESSION[$ftpIdDynamic]['currentPath'],$_SESSION[$ftpIdDynamic]['basePath'])){
+                $need_base_path = $_SESSION[$ftpIdDynamic]['basePath'];
+            }        
+        ?>
+        <?php         
+            $paths = explode('/',$_SESSION[$ftpIdDynamic]['currentPath']);        
+            foreach($paths as $k=>$path):                
+                if(!empty($path)):
+                    $current_path .= $path.'/';
+                    
+        ?>    
+        <div class="col-md-2 dir-list">
+            <a href="#" 
+            data-path="<?php echo '/'.$need_base_path.$current_path;?>"
+            data-dynamicid="<?php echo $ftpIdDynamic; ?>">
+                <?php echo $path; ?>
+            </a>        
+        </div>
+        <?php endif; endforeach; ?>
+        <br>
+    </div>     
 
 </div>
-        <ul id="tree2">
-            <!-- Start li -->
-            <?php foreach($sortDir as $k=>$each): 
-                    $ext = getFileOrFolder($each);
-                    if($ext == 'folder'):
+
+    <ul id="tree2">
+        <!-- Start li -->
+        <?php foreach($sortDir as $k=>$each): 
+                $ext = getFileOrFolder($each);
+                if($ext == 'folder'):
+            ?>
+                <!-- Folder -->
+                <li>
+                    <a href="#" 
+                    class="folderDir"
+                    id="folder<?php echo $k+1;?>" 
+                    data-path="<?php echo $_SESSION[$ftpIdDynamic]['currentPath']==$_SESSION[$ftpIdDynamic]['basePath']?$_SESSION[$ftpIdDynamic]['basePath']:$_SESSION[$ftpIdDynamic]['currentPath'];echo $each.'/'?>"
+                    data-dynamicid="<?php echo $ftpIdDynamic; ?>">
+                        <?php echo $each; ?>
+                    </a>
+                    <ul></ul>
+                </li>
+            <?php elseif($ext == 'img'): ?>
+                <!-- Image -->
+                <li id="img<?php echo $k+1;?>">
+                    <?php  
+                        $imgInfo = explode('.',$each); 
+                        /* select last and first index. if found show file extention. */
+                        if(!empty(array_values(array_slice($imgInfo, -1))[0]) && !empty($imgInfo[0])) {
+                            echo 
+                            '<span class="fileExt">.
+                            '.array_values(array_slice($imgInfo, -1))[0].
+                            '</span>';
+                        }
+                            echo $imgInfo[0];                        
+                    ?>
+                </li>
+            <?php else: ?>
+                <!-- File -->
+                <li id="file<?php echo $k+1;?>">
+                <?php  
+                    $imgInfo = explode('.',$each); 
+                    if(!empty($imgInfo[0])) {
+                        /* select last and first index. if found show file extention. */
+                        if(!empty(array_values(array_slice($imgInfo, -1))[0]) && !empty($imgInfo[0])) {
+                            echo '<span class="fileExt">.
+                            '.array_values(array_slice($imgInfo, -1))[0].
+                            '</span>';
+                        }
+                        echo 
+                        '<span class="file-name">'.
+                            $imgInfo[0].                            
+                        '<span class="file-control">'.
+                            '<a href="'.base_url('/ftp-file-edit/'.$ftpIdDynamic.'/'.$each).'" title="Edit" target="_blank"><i class="fa fa-edit"></i></a>|'.
+                            '<a href="#" title="Copy To"><i class="fa fa-clone"></i></a>|'.
+                            '<a href="#" title="Move To"><i class="fa fa-copy"></i></a>'.
+                            '|<a href="#" title="Delete"><i class="fa fa-trash"></i></a>'.
+                        '</span>'.
+                        '</span>'
+                        ;
+                    }
                 ?>
-                    <!-- Folder -->
-                    <li><a href="#" id="folder<?php echo $k+1;?>" data-path="<?php echo $_SESSION['currentPath']==$_SESSION['basePath']?$_SESSION['basePath']:$_SESSION['currentPath'];echo $each.'/'?>"><?php echo $each; ?></a>
-                        <ul></ul>
-                    </li>
-                <?php elseif($ext == 'img'): ?>
-                    <!-- Image -->
-                    <li id="img<?php echo $k+1;?>"><?php echo $each; ?></li>
-                <?php else: ?>                
-                    <!-- File -->
-                    <li id="file<?php echo $k+1;?>"><?php echo $each; ?></li>
-            <?php endif; endforeach; ?>
-            <!-- End li -->
-        </ul>
-
+                </li>
+        <?php endif; endforeach; ?>
+        <!-- End li -->
+    </ul>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-filestyle/2.1.0/bootstrap-filestyle.min.js"></script>
 
+<script src="<?php echo base_url();?>assets/js/ftp.js"></script>
 <script>
-$(document).ready(function()  {
-    $('#controlPanel a').click(function(e)   {
-        var path = $(this).data('path');
-        $.ajax({
-            url: "ftp/getFtpContentTwo",
-            type: 'post',
-            data: {'path':path},
-            success:function(response){
-                var jData = JSON.parse(response);
-
-                if(!jData.type) {
-                    toastr.error(jData.msg);
-                } else {
-                    toastr.success(jData.msg);
-                    $('#wrapperContent').html(jData.html);                    
-                    // console.log(jData.html);
-                }
-            }
-        });
-    });
-    $('#tree2 li a').click(function(e)   {
-        var path = $(this).data('path');
-        $.ajax({
-            url: "ftp/getFtpContentTwo",
-            type: 'post',
-            data: {'path':path},
-            success:function(response){
-                var jData = JSON.parse(response);
-
-                if(!jData.type) {
-                    toastr.error(jData.msg);
-                } else {
-                    toastr.success(jData.msg);
-                    $('#wrapperContent').html(jData.html);                    
-                    // console.log(jData.html);
-                }
-            }
-        });
-    });
-});
-$.fn.extend({
-    treed: function (o) {
-      
-      var openedClass = 'glyphicon-minus-sign';
-      var closedClass = 'glyphicon-plus-sign';
-      
-      if (typeof o != 'undefined'){
-        if (typeof o.openedClass != 'undefined'){
-        openedClass = o.openedClass;
-        }
-        if (typeof o.closedClass != 'undefined'){
-        closedClass = o.closedClass;
-        }
-      };
-      
-        //initialize each of the top levels
-        var tree = $(this);
-        tree.addClass("tree");
-        tree.find('li').has("ul").each(function () {
-            var branch = $(this); //li with children ul
-            branch.prepend("<i class='indicator glyphicon " + closedClass + "'></i>");
-            branch.addClass('branch');
-            branch.on('click', function (e) {
-                if (this == e.target) {
-                    var icon = $(this).children('i:first');
-                    icon.toggleClass(openedClass + " " + closedClass);
-                    $(this).children().children().toggle();
-                }
-            })
-            branch.children().children().toggle();
-        });
-        //fire event from the dynamically added icon
-      tree.find('.branch .indicator').each(function(){
-        $(this).on('click', function () {
-            $(this).closest('li').click();
-        });
-      });
-        //fire event to open branch if the li contains an anchor instead of text
-        tree.find('.branch>a').each(function () {
-            $(this).on('click', function (e) {
-                $(this).closest('li').click();
-                e.preventDefault();
-            });
-        });
-        //fire event to open branch if the li contains a button instead of text
-        tree.find('.branch>button').each(function () {
-            $(this).on('click', function (e) {
-                $(this).closest('li').click();
-                e.preventDefault();
-            });
-        });
-    }
-});
-
-//Initialization of treeviews
-$('#tree2').treed({openedClass:'glyphicon-folder-open', closedClass:'glyphicon-folder-close'});
+// file upload form Submit
+$("#uploadFile").submit(function(evt){	 
+      evt.preventDefault();
+      var formData = new FormData($(this)[0]);
+   $.ajax({
+       url: "<?php echo base_url();?>ftpserver/test",
+       type: 'POST',
+       data: formData,
+       async: false,
+       cache: false,
+       contentType: false,
+       enctype: 'multipart/form-data',
+       processData: false,
+       success: function (response) {
+         console.log(response);
+       }
+   });
+   return false;
+ });
+// rename form Submit
+$("#renameFile").submit(function(evt){	 
+      evt.preventDefault();
+      var formData = new FormData($(this)[0]);
+   $.ajax({
+       url: "<?php echo base_url();?>ftpserver/test2",
+       type: 'POST',
+       data: formData,
+       async: false,
+       cache: false,
+       contentType: false,
+       processData: false,
+       success: function (response) {
+         console.log(response);
+       }
+   });
+   return false;
+ });
 </script>
