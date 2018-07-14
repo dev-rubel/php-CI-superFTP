@@ -1,7 +1,7 @@
 <?php 
 class Ftp_model extends CI_Model {
 
-    protected $t1 = 'ftp_ftpAccounts';
+    protected $t1 = 'ftp_ftpaccounts';
     protected $t2 = 'ftp_settings';
 
     public function addFtpAccount($post) 

@@ -1,6 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+
 class Ftp extends CI_Controller {
 
 	/**
@@ -11,30 +12,31 @@ class Ftp extends CI_Controller {
      * 
     */
 
-    public function __construct() 
-    {   
+    public function __construct()
+    {
         parent::__construct();
         if(empty($_SESSION['userInfo'])) {
             redirect('login');
         }
+        // $this->load->library('datafacker');
     }
 
 	public function index()
 	{
-        $data['active'] = '';        
+        $data['active'] = '';
         $data['title'] = 'Dashboard | Super FTP';
-		$data['ftpContent'] = $this->load->view('ftp/pages/dashboardFtp','',true);
+        $data['ftpContent'] = $this->load->view('ftp/pages/dashboardFtp','',true);
 		$data['ftpList'] = $this->load->view('ftp/ftpList','',true);
-		$this->load->view('ftp/index',$data);
+		$this->load->view('ftp/index',$data);        
     }
-    
+
     /**
      * add ftp page
      * 
      * @return Response
      * @route add-ftp
     */
-    public function addFtp() 
+    public function addFtp()
     {
         $data['active'] = 'addFtp';
         $data['title'] = 'Add FTP Account | Super FTP';

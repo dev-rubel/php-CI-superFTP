@@ -7,6 +7,14 @@ function debug($data)
     echo '</pre>';
 }
 
+function pd($data)
+{
+    echo '<pre>';
+    print_r($data);
+    echo '</pre>';
+    die();
+}
+
 function selected($data1, $data2) 
 {
     if($data1 ==  $data2) {
